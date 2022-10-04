@@ -14,7 +14,16 @@ export const getByIdValidation = validation(getSchema => ({
 }));
 
 export const getById = async (request: Request<IParamProps>, response: Response ) => {
-  console.log(request.params);
+  if (Number(request.params.id) === 99999) return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    errors: {
+      default: "Registro não encontrado"
+    }
+  });
 
-  return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Não implementado");
+  return response.status(StatusCodes.OK).json(
+    {
+      id: 1,
+      nome: "Caxias do Sul"
+    }
+  );
 };

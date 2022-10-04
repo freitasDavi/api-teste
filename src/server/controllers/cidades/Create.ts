@@ -16,8 +16,5 @@ export const createValidation = validation((getSchema) => ({
 
 
 export const create = async (request: Request<{}, {}, ICidade>, response: Response) => {
-  console.log(request.body);
-
   return response.status(StatusCodes.CREATED).json(1);
-  //return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Não implementado!");
 };
