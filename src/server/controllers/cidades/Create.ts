@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import * as yup from "yup";
 
 interface ICidade {
@@ -18,15 +19,19 @@ export const create = async (req: Request<{}, {}, ICidade>, resp: Response) => {
 
   try {
     // Yup tenta validar os campos de acordo com as informações
-    validatedData = await bodyValidation.validate(req.body);
-  } catch (error) {
-    const yupError = error as yup.ValidationError;
+    validatedData = await bodyValidation.validate(req.body, { abortEarly: false });
+  } catch (err) {
+    const yupError = err as yup.ValidationError;
+    const errors: Record<string, string> = {};
 
-    return resp.json({
-      errors: {
-        default: yupError.message,
-      }
+    // Itera pelos erros, armazenando em uma variável para mostrar
+    yupError.inner.forEach((error) => {
+      if (error.path === undefined) return;
+
+      errors[error.path] = error.message;
     });
+
+    return resp.status(StatusCodes.BAD_REQUEST).json({ errors });
   }
 
   console.log(validatedData);
