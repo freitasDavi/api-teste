@@ -7,24 +7,18 @@ interface ICidade {
   nome: string;
   estado: string;
 }
-interface IFilter {
-  filter?: string;
-}
 
 // Validação 
 export const createValidation = validation((getSchema) => ({
   body: getSchema<ICidade>(yup.object().shape({
     nome: yup.string().required().min(3),
     estado: yup.string().required().min(3)
-  })),
-  query: getSchema<IFilter>(yup.object().shape({
-    filter: yup.string().required().min(3)
   }))
 }));
 
 
-export const create = async (req: Request<{}, {}, ICidade>, resp: Response) => {
-  console.log(req.body);
+export const create = async (request: Request<{}, {}, ICidade>, response: Response) => {
+  console.log(request.body);
 
-  return resp.send("Create!");
+  return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Não implementado!");
 };
