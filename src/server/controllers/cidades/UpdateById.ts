@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import * as yup from "yup";
 import { ICidade } from "../../database/models";
+import { CidadesProvider } from "../../database/providers/cidades";
 import { validation } from "../../shared/middlewares";
 
 interface IParamProps {
@@ -20,11 +21,22 @@ export const updateByIdValidation = validation(getSchema => ({
 }));
 
 export const updateById = async (request: Request<IParamProps, {}, IBodyProps>, response: Response ) => {
-  if (Number(request.params.id) === 99999) return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-    errors: {
-      default: "Registro não encontrado"
-    }
-  });
+  if (!request.params.id) {
+    return response.status(StatusCodes.BAD_REQUEST).json({
+      errors: {
+        default: "O parâmetro 'id' deve ser informado"
+      }
+    });
+  }
 
-  return response.status(StatusCodes.NO_CONTENT).send();
+  const result = await CidadesProvider.updateById(request.params.id, request.body);
+  if (result  instanceof Error) {
+    return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      errors: {
+        default: result.message
+      }
+    });
+  }
+
+  return response.status(StatusCodes.NO_CONTENT).json(result);
 };
